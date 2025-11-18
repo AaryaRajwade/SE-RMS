@@ -10,6 +10,12 @@ const PropertySchema = new mongoose.Schema({
   renter: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // current tenant
   rentPerMonth: { type: Number, required: true },
   deposit: { type: Number, required: true },
+  photo: { type: String }, // base64 or image URL
+  description: { type: String },
+  bhk: { type: String }, // 1BHK, 2BHK, etc
+  amenities: [{ type: String }], // WiFi, Parking, etc
+  isApproved: { type: Boolean, default: false }, // admin approval
+  createdAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Property', PropertySchema);

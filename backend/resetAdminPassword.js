@@ -1,10 +1,10 @@
 // resetAdminPassword.js
 require("dotenv").config();
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+
 const User = require("./models/User"); // adjust path if different
 
-const SALT_ROUNDS = 10;
+
 
 async function run() {
   if (!process.env.MONGO_URI) {
@@ -25,11 +25,8 @@ async function run() {
     process.exit(1);
   }
 
-  // create a fresh bcrypt hash and save (this uses same bcrypt as your model)
-  const salt = await bcrypt.genSalt(SALT_ROUNDS);
-  const hash = await bcrypt.hash(plain, salt);
-
-  user.password = hash;
+  // Directly assign plain password (no hashing)
+  user.password = plain;
   user.isApproved = true;
   user.role = "admin";
   user.isBanned = false;
@@ -37,9 +34,7 @@ async function run() {
   await user.save();
   console.log(`Password for '${username}' reset to '${plain}' (hashed and saved).`);
 
-  // Optional: test compare here and print result
-  const match = await bcrypt.compare(plain, user.password);
-  console.log("Local bcrypt compare result:", match);
+
 
   await mongoose.disconnect();
   process.exit(0);

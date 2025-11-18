@@ -1,8 +1,7 @@
 // models/User.js
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 
-const SALT_ROUNDS = 10;
+
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -18,20 +17,11 @@ const UserSchema = new mongoose.Schema({
   isBanned: { type: Boolean, default: false },
 }, { timestamps: true });
 
-// Hash password before save
-UserSchema.pre('save', async function (next) {
-  const user = this;
-  if (!user.isModified('password')) return next();
-  try {
-    const salt = await bcrypt.genSalt(SALT_ROUNDS);
-    user.password = await bcrypt.hash(user.password, salt);
-    next();
-  } catch (err) { next(err); }
-});
 
-// Method to compare password
+
+// Method to compare password (plain string match)
 UserSchema.methods.comparePassword = function (candidate) {
-  return bcrypt.compare(candidate, this.password);
+  return Promise.resolve(candidate === this.password);
 };
 
 module.exports = mongoose.model('User', UserSchema);
